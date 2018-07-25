@@ -1,11 +1,28 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      About
+      Location
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-
+  <ion-grid>
+    <ion-row>
+      <ion-col>Longitude:
+        <ion-input type="number" readonly="true" [(ngModel)]="longitude"></ion-input>
+      </ion-col>
+      <ion-col>Latitude:
+        <ion-input type="number" readonly="true" [(ngModel)]="latitude"></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>Altitude:
+        <ion-input type="number" readonly="true" [(ngModel)]="altitude"></ion-input>
+      </ion-col>
+      <ion-col>Speed:
+        <ion-input type="number" readonly="true" [(ngModel)]="speed"></ion-input>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
