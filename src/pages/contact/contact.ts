@@ -50,11 +50,6 @@ this.delegate.didEnterRegion()
   );
 }
 
-let beaconRegion = this.ibeacon.BeaconRegion('deskBeacon','F7826DA6-ASDF-ASDF-8024-BC5B71E0893E');
 
-this.ibeacon.startMonitoringForRegion(beaconRegion)
-  .then(
-    () => console.log('Native layer recieved the request to monitoring'),
-    error => console.error('Native layer failed to begin monitoring: ', error)
-  );
+}
 
