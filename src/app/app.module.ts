@@ -13,6 +13,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Geolocation } from '@ionic-native/geolocation';
 import { CalculatorProvider } from '../providers/calculator/calculator';
 
+import { IBeacon } from '@ionic-native/ibeacon';
+import { HTTP } from '@ionic-native/http';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -38,7 +41,9 @@ import { CalculatorProvider } from '../providers/calculator/calculator';
     SplashScreen,
     Geolocation,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    CalculatorProvider
+    CalculatorProvider,
+    IBeacon,
+    HTTP
   ]
 })
 export class AppModule {}

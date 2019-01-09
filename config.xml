@@ -84,5 +84,7 @@
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
-    <engine name="android" spec="~7.0.0" />
+    <plugin name="com.unarin.cordova.beacon" spec="~3.7.0" />
+    <plugin name="cordova-plugin-advanced-http" spec="2.0.2" />
+    <engine name="android" spec="7.1.4" />
 </widget>
