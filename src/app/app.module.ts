@@ -14,7 +14,11 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { CalculatorProvider } from '../providers/calculator/calculator';
 
 import { IBeacon } from '@ionic-native/ibeacon';
-import { HTTP } from '@ionic-native/http';
+import { HttpClient } from '@angular/common/http';
+import { TextToSpeech } from '@ionic-native/text-to-speech';
+import { HttpProvider } from '../providers/http/http';
+import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -26,7 +30,9 @@ import { HTTP } from '@ionic-native/http';
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    HttpClientModule,
+    HttpModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -43,7 +49,8 @@ import { HTTP } from '@ionic-native/http';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     CalculatorProvider,
     IBeacon,
-    HTTP
+    TextToSpeech,
+    HttpProvider
   ]
 })
 export class AppModule {}

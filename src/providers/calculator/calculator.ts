@@ -1,4 +1,4 @@
-import { HTTP } from '@ionic-native/http';
+
 import { Injectable } from '@angular/core';
 
 /*
@@ -10,12 +10,12 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class CalculatorProvider {
 
-  constructor(public http: HTTP) {
+  constructor() {
     console.log('Hello CalculatorProvider Provider');
   }
 
-  calculate(){
-    console.log("calculated");
+  calculate(response){
+    return "In 3 Metern geht es steil bergab, bitte sofort stehen bleiben!"
   }
 
 }
