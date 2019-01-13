@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { IBeacon } from '@ionic-native/ibeacon';
-import { CalculatorProvider } from '../../providers/calculator/calculator';
-import { HttpProvider } from '../../providers/http/http';
-import { AlertController } from 'ionic-angular';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
+
+import { Beacon, DistanceCalculator } from '../../providers/calculator/calculator';
 
 @Component({
   selector: 'page-contact',
@@ -12,8 +11,9 @@ import { TextToSpeech } from '@ionic-native/text-to-speech';
 })
 export class ContactPage {
 
-  foundRegions=[];
+  foundBeacons = [];
   delegate: any;
+  //Deklaration der BeaconRegion
   regions = [
     this.iBeacon.BeaconRegion('beacon1', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 1, 1),
     this.iBeacon.BeaconRegion('beacon2', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 2, 1),
@@ -21,76 +21,73 @@ export class ContactPage {
     this.iBeacon.BeaconRegion('beacon4', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 4, 1)
   ]
 
-  constructor(private httpProvider:HttpProvider, public navCtrl: NavController,private tts: TextToSpeech, private alertCtrl: AlertController, private iBeacon: IBeacon, private calculator: CalculatorProvider) {
+  //Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
+  //Wozu private calculator: CalculatorProvider ? Viel einfacher und schöner: calculate als static-Methode.
+  constructor(public navCtrl: NavController, private tts: TextToSpeech, private iBeacon: IBeacon) {
 
     let delegate = this.iBeacon.Delegate();
 
     // Subscribe to some of the delegate's event handlers
-      delegate.didRangeBeaconsInRegion()
-        .subscribe(
+    delegate.didRangeBeaconsInRegion()
+      .subscribe(
         data => { console.log('didRangeBeaconsInRegion: ', data) },
         error => { console.error() }
-        );
-      delegate.didStartMonitoringForRegion()
-        .subscribe(
+      );
+    delegate.didStartMonitoringForRegion()
+      .subscribe(
         data => { console.log('didStartMonitoringForRegion: ', data) },
         error => { console.error() }
-        );
-      delegate.didEnterRegion()
-        .subscribe(
+      );
+    delegate.didEnterRegion()
+      .subscribe(
         data => {
           console.log('didEnterRegion: ', data);
-          this.handleBeaconDiscovered(data);
+          this.handleRegionDiscovered(data);
         }
-        );
-      delegate.didExitRegion()
-        .subscribe(
+      );
+    delegate.didExitRegion()
+      .subscribe(
         data => {
           console.log('didExitRegion: ', data);
         }
-        );
-      this.startMonitoringForAllRegions();
-    }
-
+      );
+    this.startMonitoringForAllRegions();
+  }
 
   startMonitoringForAllRegions() {
     for (var region of this.regions) {
       console.log(region);
       this.iBeacon.startMonitoringForRegion(region)
         .then(
-        () => console.log('Native layer recieved the request to monitoring'),
-        error => console.error('Native layer failed to begin monitoring: ', error)
+          () => console.log('Native layer recieved the request to monitoring'),
+          error => console.error('Native layer failed to begin monitoring: ', error)
         );
     }
   }
 
-  handleBeaconDiscovered(region) {
+  handleRegionDiscovered(region) {
     console.log("found beacon");
     console.log(region);
-    //Wenn alle Bacons gefunden sind, dann die Positionswerte vom Webservice holen.
-    this.foundRegions.push(region);
+    this.foundBeacons.push(region);
 
-    //Mit Server
-    /*
-    this.httpProvider.getPositions(this.foundRegions).subscribe((response)=>{
-      this.calculator.calculate(response);
-    });
-    */
-    //Ohne Server
-    let hcPositions = this.httpProvider.getHardcodedPositions();
-      let answer = this.calculator.calculate(hcPositions);
-    //Anschließend die Werte in den Triangluationsprovider/Calcular übergeben und Anschließend die Ergebnisse der Berechnung als Sprachausgabe ausgeben
+    //Wenn genug Beacons gefunden sind, dann die Position berechnen
+    if (this.foundBeacons.length >= 3) {
 
-    this.speak(answer);
-    console.log("found beacon");
-    console.log(region);
+      //Position Berechnen
+      var beacons: Beacon[] = [new Beacon("HAHA", "1", "2", Number.NaN, Number.NaN, Number.NaN)]
+      var distances: number[] = [1, 2, 3];
+      var answer = DistanceCalculator.calculate(beacons, distances);
 
+      //Position ausgeben
+      this.speak(answer);
+      console.log("found beacon");
+      console.log(region);
+    }
   }
 
-  speak(answer){
+  speak(answer) {
     this.tts.speak(answer)
-  .then(() => console.log('Success'))
-  .catch((reason: any) => console.log(reason));
+      .then(() => console.log('Success'))
+      .catch((reason: any) => console.log(reason));
   }
-
 }

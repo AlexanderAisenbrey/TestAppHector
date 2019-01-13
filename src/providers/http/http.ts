@@ -2,16 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 
-/*
-  Generated class for the HttpProvider provider.
+//  Generated class for the HttpProvider provider.
+//
+//  See https://angular.io/guide/dependency-injection for more info on providers
+//  and Angular DI.
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class HttpProvider {
 
-  webservice: any = "https://euerwebservice/";
+  webservice: any = "http://185.101.94.223/"; //"https://euerwebservice/";
 
   constructor(public http: Http) {
     console.log('Hello HttpProvider Provider');
