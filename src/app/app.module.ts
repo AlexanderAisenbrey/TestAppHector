@@ -17,6 +17,7 @@ import { DistanceCalculator } from '../providers/calculator/calculator';
 import { Http ,HttpModule} from '@angular/http';
 import {HttpClientModule} from '@angular/common/http';
 import { IBeacon } from '@ionic-native/ibeacon';
+import { TextToSpeech } from '@ionic-native/text-to-speech';
 
 
 @NgModule({
@@ -50,7 +51,7 @@ import { IBeacon } from '@ionic-native/ibeacon';
     SplashScreen,
     Geolocation,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    
+    TextToSpeech
   ]
 })
 export class AppModule {}

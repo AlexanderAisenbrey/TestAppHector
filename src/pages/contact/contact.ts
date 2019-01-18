@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { IBeacon } from '@ionic-native/ibeacon';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
-
 import { Beacon, DistanceCalculator } from '../../providers/calculator/calculator';
 
 @Component({
@@ -15,7 +14,6 @@ export class ContactPage {
   delegate: any;
   //Deklaration der BeaconRegion
   regions = [
-    this.iBeacon.BeaconRegion('beacon1', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 1, 1),
     this.iBeacon.BeaconRegion('beacon2', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 2, 1),
     this.iBeacon.BeaconRegion('beacon3', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 3, 1),
     this.iBeacon.BeaconRegion('beacon4', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 4, 1)
@@ -66,8 +64,7 @@ export class ContactPage {
   }
 
   handleRegionDiscovered(region) {
-    console.log("found beacon");
-    console.log(region);
+    console.log("found beacon: ",region);
     this.foundBeacons.push(region);
 
     //Wenn genug Beacons gefunden sind, dann die Position berechnen
@@ -80,8 +77,7 @@ export class ContactPage {
 
       //Position ausgeben
       this.speak(answer);
-      console.log("found beacon");
-      console.log(region);
+      console.log("Found Beacons"+this.foundBeacons);
     }
   }
 

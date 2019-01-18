@@ -86,6 +86,6 @@
     </plugin>
     <plugin name="com.unarin.cordova.beacon" spec="~3.7.0" />
     <plugin name="cordova-plugin-advanced-http" spec="2.0.2" />
-    <plugin name="cordova-plugin-tts" spec="0.2.3" />
+    <plugin name="cordova-plugin-tts" spec="^0.2.3" />
     <engine name="android" spec="7.1.4" />
 </widget>
