@@ -67,17 +67,9 @@ export class ContactPage {
     console.log("found beacon: ",region);
     this.foundBeacons.push(region);
 
-    //Wenn genug Beacons gefunden sind, dann die Position berechnen
-    if (this.foundBeacons.length >= 3) {
-
-      //Position Berechnen
-      var beacons: Beacon[] = [new Beacon("HAHA", "1", "2", Number.NaN, Number.NaN, Number.NaN)]
-      var distances: number[] = [1, 2, 3];
-      var answer = DistanceCalculator.calculate(beacons, distances);
-
-      //Position ausgeben
-      this.speak(answer);
-      console.log("Found Beacons"+this.foundBeacons);
+    //An dieser Stelle werden die Beacons gefunden und hier muss der restliche Code geschrieben werden,
+    //der dann festlegt was passieren soll wenn ein Beacons bzw. mehrere gefunden werden.
+    //Prüfen, ob die richtige UUID der Beacons in den Regions regisitriert ist! Da ich andere Beacons hier habe zum testen
     }
   }
 
