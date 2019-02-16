@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { IBeacon, IBeaconPluginResult } from '@ionic-native/ibeacon'; //Braucht man IBeaconPluginResult? Und Region?
 import { TextToSpeech } from '@ionic-native/text-to-speech';
@@ -83,7 +83,7 @@ export class ContactPage {
     //An dieser Stelle werden die Beacons gefunden und hier muss der restliche Code geschrieben werden,
     //der dann festlegt was passieren soll wenn ein Beacons bzw. mehrere gefunden werden.
     //Prüfen, ob die richtige UUID der Beacons in den Regions regisitriert ist! Da ich andere Beacons hier habe zum testen
-    }
+    
     //Position Berechnen
     var answers = DistanceCalculator.calculate(this.foundBeacons);
     var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
