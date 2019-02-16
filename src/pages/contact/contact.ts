@@ -76,7 +76,7 @@ export class ContactPage {
 
   speak(answer: string) {
     this.tts.speak(answer)
-      .then(() => console.log('Success'))
-      .catch((reason: any) => console.log(reason));
+      .then(() => this.log.apply('Success'))
+      .catch((reason: any) => this.log.apply(reason));
   }
 }
