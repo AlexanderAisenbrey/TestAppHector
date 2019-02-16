@@ -7,11 +7,11 @@
 </ion-header>
 
 <ion-content>
-  <ion-list *ngFor="let region of regions">
+  <ion-list *ngFor="let foundBeacon of foundBeacons">
     <ion-list-header>Found Beacons</ion-list-header>
     <ion-item>
       <ion-icon name="ionic" item-start></ion-icon>
-      {{region.identifier}}
+      {{foundBeacon.UUID + ":" + foundBeacon.Major + ":" + foundBeacon.Minor}}
     </ion-item>
   </ion-list>
 </ion-content>
