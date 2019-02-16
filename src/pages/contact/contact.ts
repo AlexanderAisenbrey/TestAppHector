@@ -10,6 +10,7 @@ import { CalculatorBeacon, DistanceCalculator } from '../../providers/calculator
 })
 
 export class ContactPage {
+  log:StringConstructor;
   foundBeacons:CalculatorBeacon[];
   foundRegions:IBeaconPluginResult[];
 
@@ -23,43 +24,28 @@ export class ContactPage {
   //Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
   //Wozu private calculator: CalculatorProvider? Viel einfacher und schöner: calculate als static-Methode.
   constructor(public navCtrl: NavController, private tts: TextToSpeech, private iBeacon: IBeacon) {
-
     let delegate = this.iBeacon.Delegate();
-
+    
+    this.log.apply("Test Fabian");
     // Subscribe to some of the delegate's event handlers
     delegate.didRangeBeaconsInRegion()
-      .subscribe(
-        data => { console.log('didRangeBeaconsInRegion: ', data) },
-        error => { console.error() }
-      );
+      .subscribe( data => { this.log.apply('didRangeBeaconsInRegion: ', data) });
     delegate.didStartMonitoringForRegion()
-      .subscribe(
-        data => { console.log('didStartMonitoringForRegion: ', data) },
-        error => { console.error() }
-      );
+      .subscribe( data => { this.log.apply('didStartMonitoringForRegion: ', data) });
     delegate.didEnterRegion()
-      .subscribe(
-        data => {
-          console.log('didEnterRegion: ', data);
-          this.handleRegionDiscovered(data);
-        }
-      );
+      .subscribe( data => { this.log.apply('didEnterRegion: ', data) });
     delegate.didExitRegion()
-      .subscribe(
-        data => {
-          console.log('didExitRegion: ', data);
-        }
-      );
+      .subscribe( data => { this.log.apply('didExitRegion: ', data) });
     this.startMonitoringForAllRegions();
   }
 
   startMonitoringForAllRegions() {
     for (var region of this.regions) {
-      console.log(region);
+      this.log.apply(region);
       this.iBeacon.startMonitoringForRegion(region)
         .then(
-          () => console.log('Native layer recieved the request to monitoring'),
-          error => console.error('Native layer failed to begin monitoring: ', error)
+          () => this.log.apply('Native layer recieved the request to monitoring'),
+          error => this.log.apply('Native layer failed to begin monitoring: ', error)
         );
     }
   }
@@ -79,12 +65,7 @@ export class ContactPage {
         this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
       }
 
-
-    //An dieser Stelle werden die Beacons gefunden und hier muss der restliche Code geschrieben werden,
-    //der dann festlegt was passieren soll wenn ein Beacons bzw. mehrere gefunden werden.
-    //Prüfen, ob die richtige UUID der Beacons in den Regions regisitriert ist! Da ich andere Beacons hier habe zum testen
-    
-    //Position Berechnen
+    //Position berechnen
     var answers = DistanceCalculator.calculate(this.foundBeacons);
     var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
 
