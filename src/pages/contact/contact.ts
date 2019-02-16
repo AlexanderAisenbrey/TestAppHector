@@ -43,6 +43,7 @@ export class ContactPage {
     this.log1+="Zu suchende UUIDs:\n";
     for (var region of this.regions) {
       this.log1+=region.uuid;
+      this.log2 += "\n";
       this.iBeacon.startMonitoringForRegion(region)
         .then(() => this.log1+='Native layer recieved the request to monitoring\n');
     }

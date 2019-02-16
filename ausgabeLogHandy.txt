@@ -1,0 +1,19 @@
+Test log 1
+Zu suchende UUIDs:
+B9407F30-F5F8-466E-AFF9-25556B57FE6DB9407F30-F5F8-466E-AFF9-25556B57FE6DB9407F30-F5F8-466E-AFF9-25556B57FE6D
+####
+didStartMonitoringForRegion:
+didStartMonitoringForRegion:
+didStartMonitoringForRegion:
+Native layer recieved the request to monitoring
+Native layer recieved the request to monitoring
+Native layer recieved the request to monitoring
+didExitRegion:
+BeDi
+didExitRegion:
+didExitRegion
+
+
+Test log 2
+didEnterRegion:
+BeDi
