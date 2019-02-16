@@ -1,68 +1,42 @@
-
-import { Injectable } from '@angular/core';
-
-/*
-  Generated class for the CalculatorProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
+// import { Injectable } from '@angular/core';
+// import { a } from '@angular/core/src/render3';
+import * as $ from "jquery";
 
 export class DistanceCalculator {
 
-    static calculate(beaconNames: Beacon[], distances: number[]) {
-        if (beaconNames.length < 3) //Calculations need three beacons for beeing in a three-dimensional space.
-            return 1;
+    static calculate(beacons: CalculatorBeacon[]): Vector[] {
+        if (beacons.length < 3) //Calculations need three beacons for beeing in a three-dimensional space.
+            return;
 
         var allBeacons = this.getAllBeaconData("http://185.101.94.223/");
-        var indeces;
-        for (var i = 0; i < beaconNames.length; i++){
-            var index = allBeacons.findIndex((x => x.UUID == beaconNames[i].UUID && x.Major == beaconNames[i].Major && x.Minor == beaconNames[i].Minor));
-            if(index != -1) //if no index found: remove this index from list of found beacons
-                indeces[i] = index;
+        
+        for (var i = 0; i < beacons.length; i++){ //merge data from sender (beacon) and position data from website
+            var index = allBeacons.findIndex((x => x.UUID == beacons[i].UUID && x.Major == beacons[i].Major && x.Minor == beacons[i].Minor));
+            if(index != -1) //if no index found: remove this index from list of found beacons, as the found beacons does not belong to this project
+                beacons[i].Position = allBeacons[index].Position;   
             else{
-                beaconNames.splice(i,1);
+                beacons.splice(i,1);
                 i--;
             }
         }
         
-        if (beaconNames.length < 3) //Calculations need three beacons for beeing in a three-dimensional space.
-            return 1;
+        if (beacons.length < 3) //Calculations need three beacons for beeing in a three-dimensional space.
+            return;
 
-        while (beaconNames.length > 3){ //Remove beacons with greatest distance until three remaining
-            var maximum = distances[0];
-            var maximumIndex = 0;
-            for(i = 1; i < distances.length; i++)
-                if(distances[i] > maximum){
-                    maximum = distances[i];
-                    maximumIndex = i;
-                }
-            distances.splice(maximumIndex,1);
-        }
+        //Sort Beacons, Keep the three closest beacons
+        beacons.sort(function(a, b){return a.Distance-b.Distance});
+        beacons.splice(3, length-3);
 
-        var beaconPositions : Vector[];
-        for (i = 0; i < beaconNames.length; i++)
-            beaconPositions[i] = allBeacons[indeces[i]].positionToVector();
-
-
-        this.calculatePoints(beaconPositions, distances);
+        return this.calculatePoints(
+            [beacons[0].Position, beacons[1].Position, beacons[2].Position], 
+            [beacons[0].Distance, beacons[1].Distance, beacons[2].Distance]);
     }
     
-    static test() {
-        //Hardgecodete Probewerte
-        var p = [
-            new Vector(0, 0, 0),
-            new Vector(1.5, 0.5, 1),
-            new Vector(1.5, -0.6, 0.7)];
-        var r = [1.7, 1.1, 1.7];
-
-        return this.calculatePoints(p, r);
-    }
-
-    static getAllBeaconData(URL: string) {
+   //PRIVATES ##########################################################################################################################################
+    private static getAllBeaconData(URL: string): CalculatorBeacon[] {
         var lines = $.get(URL).responseText.split('\n'); //Lines of HTML of our website
        
-        var b; //Beacons: UUID | Major | Minor | Length | Width | Altitude
+        var b; //Beacons: UUID | Major | Minor | Length | Width | Altitude | Distance (Parameter: RSSI, TX)
         var i = 0, row = 0, col = 0;
 
         while (lines[i].length < 4 || lines[i].substr(0, 4) != "<td>") { i++ }
@@ -80,14 +54,13 @@ export class DistanceCalculator {
             row++;
         }
         
-        var beacons = new Array(b.length);
+        var beacons: CalculatorBeacon[] = new Array(b.length);
         for (var j = 0; j < b.length; j++)
-            beacons[j] = new Beacon(b[j][0], b[j][1], b[j][2], b[j][3], b[j][4], b[j][5]);
+            beacons[j] = new CalculatorBeacon(b[j][0], b[j][1], b[j][2], b[j][3], b[j][4], b[j][5], NaN, NaN);
         return beacons;
     }
 
-    //NOT TO BE USED FROM OUTSIDE! ##########################################################################################################################################
-    static calculatePoints(p: Vector[], r: number[]) {
+    private static calculatePoints(p: Vector[], r: number[]) {
         var absAB, beta, h_1, s_1, t_1;
         var absAC, gamma, h_2, s_2, t_2;
 
@@ -151,71 +124,78 @@ export class DistanceCalculator {
     }
 
     //Vektorstreckung: Skalar mal Vektor
-    static VStr(a, b) { //double a, Vector b
+    private static VStr(a, b) { //double a, Vector b
         return new Vector(a * b.x, a * b.y, a * b.z);
     }
 
     //Vektoraddition: Vektor + Vektor
-    static VAdd(a, b) { //Vector a, Vector b
+    private static VAdd(a, b) { //Vector a, Vector b
         return new Vector(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
     //Skalarprodukt: Vektor * Vektor
-    static Ska(a, b) { //Vector a, Vector b
+    private static Ska(a, b) { //Vector a, Vector b
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
     //Vektorprodukt: Vektor kreuz Vektor
-    static Vektorprodukt(a, b) { //Vector a, vector b
+    private static Vektorprodukt(a, b) { //Vector a, vector b
         return new Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
     }
 
     //Vektorbetrag: Betrag eines Vektors
-    static Vektorbetrag(a) { //Vector a
+    private static Vektorbetrag(a) { //Vector a
         return Math.sqrt(this.sq(a.x) + this.sq(a.y) + this.sq(a.z));
     }
 
     //Lösung einer quadratischen Gleichung
-    static QuadratischeGleichung(a, b, c, res1, res2) { //parameter a,b,c of QUADRATISCHE GLEICHUNG
+    private static QuadratischeGleichung(a, b, c, res1, res2) { //parameter a,b,c of QUADRATISCHE GLEICHUNG
         var root = Math.sqrt(this.sq(b) - 4 * a * c);
         res1 = (-b - root) / (2 * a);
         res2 = (-b + root) / (2 * a);
     }
 
     // a^2
-    static sq(a) {
+    private static sq(a) {
         return a * a;
     }
+
+    // static test() {
+    //     //Hardgecodete Probewerte
+    //     var p = [
+    //         new Vector(0, 0, 0),
+    //         new Vector(1.5, 0.5, 1),
+    //         new Vector(1.5, -0.6, 0.7)];
+    //     var r = [1.7, 1.1, 1.7];
+
+    //     return this.calculatePoints(p, r);
+    // }
 }
 
 export class Vector {
-    x = 0.0;
-    y = 0.0;
-    z = 0.0;
+    x : number;
+    y : number;
+    z : number;
 
-    constructor(x, y, z) { this.x = x; this.y = y; this.z = z; }
+    constructor(x:number, y:number, z:number) { this.x = x; this.y = y; this.z = z; }
 
-    writeString() { return "X: " + this.x + "Y: " + this.y + "Z: " + this.z }
+    toString() { return "X: " + this.x + "Y: " + this.y + "Z: " + this.z }
 }
 
-export class Beacon {
+export class CalculatorBeacon {
+    static N:number = 3; //Constant depending on the environment. Usually between 2 and 4
     UUID: string;
-    Major: string;
-    Minor: string;
-    Length: number;
-    Width: number;
-    Altitude: number;
+    Major: number;
+    Minor: number;
+    Position: Vector;
+    Distance: number;
+    
 
-    constructor(UUID: string, Major: string, Minor: string, Length: number, Width: number, Altitude: number) {
-        this.UUID = UUID;
-        this.Major = Major;
-        this.Minor = Minor;
-        this.Length = Length;
-        this.Width = Width;
-        this.Altitude = Altitude;
-    }
-
-    positionToVector(){
-        return new Vector(this.Length, this.Width, this.Altitude);
+    constructor(UUID: string, Major: number, Minor: number, Length: number, Width: number, Altitude: number, RSSI: number, tx: number) {
+         this.UUID = UUID;
+         this.Major = Major;
+         this.Minor = Minor;
+         this.Position = new Vector(Length, Width, Altitude);
+         this.Distance = Math.pow(10,(tx - RSSI)/(10*CalculatorBeacon.N));
     }
 }
