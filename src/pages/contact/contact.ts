@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Loading } from 'ionic-angular';
 import { IBeacon, IBeaconPluginResult } from '@ionic-native/ibeacon';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { CalculatorBeacon, DistanceCalculator } from '../../providers/calculator/calculator';
@@ -11,10 +11,10 @@ import { stringify } from '@angular/compiler/src/util';
 })
 
 export class ContactPage {
-  log1:String = "";
-  log2:String = "";
-  foundBeacons:CalculatorBeacon[]=[];
-  foundRegions:IBeaconPluginResult[]=[];
+  log1: String = "";
+  log2: String = "";
+  foundBeacons: CalculatorBeacon[] = [];
+  foundRegions: IBeaconPluginResult[] = [];
 
   regions = [ // Deklaration der BeaconRegion
     //this.iBeacon.BeaconRegion('beacon1', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 1, 1),
@@ -26,30 +26,30 @@ export class ContactPage {
   // Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
   // Wozu private calculator: CalculatorProvider? Viel einfacher und schöner: calculate als static-Methode.
   constructor(public navCtrl: NavController, private tts: TextToSpeech, private iBeacon: IBeacon) {
-    this.loga("1");
+    // this.loga("1");
     let delegate = this.iBeacon.Delegate();
-    
+
     // Subscribe to some of the delegate's event handlers
     delegate.didRangeBeaconsInRegion()
-      .subscribe( data => {this.log('didRangeBeaconsInRegion:')});
+      .subscribe(data => { this.log('didRangeBeaconsInRegion:') });
     delegate.didStartMonitoringForRegion()
-      .subscribe( data => {this.loga("5");});
+       .subscribe(data => { this.loga(""); });
     delegate.didEnterRegion()
-      .subscribe( data => {this.loga('\nA'); this.handleRegionDiscovered(data) });
+      .subscribe(data => { this.loga('\nA'); this.handleRegionDiscovered(data) });
     delegate.didExitRegion()
-      .subscribe( data => {this.log('Z') });
+      .subscribe(data => { this.log('Z') });
     this.startMonitoringForAllRegions();
-    this.loga("4");
+    // this.loga("4");
   }
 
   startMonitoringForAllRegions() {
-    this.loga("2");
+    // this.loga("2");
     for (var region of this.regions) {
       //this.log(region.uuid);
       this.iBeacon.startMonitoringForRegion(region)
-        .then(() => this.loga("6"));
+        // .then(() => this.loga("6"));
     }
-    this.loga("3");
+    // this.loga("3");
   }
 
   handleRegionDiscovered(region: IBeaconPluginResult) {
@@ -57,14 +57,17 @@ export class ContactPage {
     // aktuelle Region zu Regionen hinzufügen    
     this.foundRegions.push(region);
     this.loga("C");
-    // // Beacons aus Regionen in CalculatorBeacons
+    // Beacons aus Regionen in CalculatorBeacons
     this.foundBeacons = [];
-     for(let i = 0; i < this.foundRegions.length; i++)
-       for(let j = 0; j < this.foundRegions[i].beacons.length; j++){
+    for (let i = 0; i < this.foundRegions.length; i++) {
+      this.loga(this.foundRegions.length.toString());
+      //this.loga("x" + this.foundRegions[i].toString() + "x");
+      for (let j = 0; j < this.foundRegions[i].beacons.length; j++) {
         this.loga("D");
         //  let pB = this.foundRegions[i].beacons[j];
-    //     this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
-       }
+        //     this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
+      }
+    }
     //this.logb("NoBeacons: " + this.foundBeacons.length.toString())
     // Position berechnen
     //var answers = DistanceCalculator.calculate(this.foundBeacons);
@@ -73,7 +76,7 @@ export class ContactPage {
     //Position ausgeben
     //this.speak(answer);
     this.loga("D");
-   }
+  }
 
   speak(answer: string) {
     this.tts.speak(answer)
@@ -81,14 +84,14 @@ export class ContactPage {
       .catch((reason: any) => console.log(reason));
   }
 
-  log(logtext: string){
+  log(logtext: string) {
     this.log1 += logtext + "\n";
   }
 
-  loga(logtext: string){
+  loga(logtext: string) {
     this.log1 += logtext + " ";
   }
-  logb(logtext: string){
+  logb(logtext: string) {
     this.log1 += logtext + "\n";
     this.log2 += logtext + "\n";
   }
