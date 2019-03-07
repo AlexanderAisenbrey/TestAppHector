@@ -61,7 +61,7 @@ export class ContactPage {
     this.foundBeacons = [];
     for (let i = 0; i < this.foundRegions.length; i++) {
       this.loga(this.foundRegions.length.toString());
-      //this.loga("x" + this.foundRegions[i].toString() + "x");
+      this.loga("x" + this.foundRegions[i].toString() + "x");
       for (let j = 0; j < this.foundRegions[i].beacons.length; j++) {
         this.loga("D");
         //  let pB = this.foundRegions[i].beacons[j];
