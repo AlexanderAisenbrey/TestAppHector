@@ -16,15 +16,15 @@ export class ContactPage {
   foundBeacons:CalculatorBeacon[];
   foundRegions:IBeaconPluginResult[];
 
-  regions = [ //Deklaration der BeaconRegion
+  regions = [ // Deklaration der BeaconRegion
     //this.iBeacon.BeaconRegion('beacon1', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 1, 1),
     this.iBeacon.BeaconRegion('beacon2', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 2, 1),
     this.iBeacon.BeaconRegion('beacon3', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 3, 1),
     this.iBeacon.BeaconRegion('beacon4', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 4, 1)
   ]
 
-  //Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
-  //Wozu private calculator: CalculatorProvider? Viel einfacher und schöner: calculate als static-Methode.
+  // Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
+  // Wozu private calculator: CalculatorProvider? Viel einfacher und schöner: calculate als static-Methode.
   constructor(public navCtrl: NavController, private tts: TextToSpeech, private iBeacon: IBeacon) {
     this.loga("1");
     let delegate = this.iBeacon.Delegate();
@@ -35,9 +35,9 @@ export class ContactPage {
     delegate.didStartMonitoringForRegion()
       .subscribe( data => {this.loga("5");});
     delegate.didEnterRegion()
-      .subscribe( data => {this.logb('didEnterRegion:'); this.handleRegionDiscovered(data) });
+      .subscribe( data => {this.logb('A'); this.handleRegionDiscovered(data) });
     delegate.didExitRegion()
-      .subscribe( data => {this.log('didExitRegion:') });
+      .subscribe( data => {this.log('Z') });
     this.startMonitoringForAllRegions();
     this.loga("4");
   }
@@ -53,20 +53,21 @@ export class ContactPage {
   }
 
   handleRegionDiscovered(region: IBeaconPluginResult) {
-   this.logb("beaconsDiscovered");
-   //aktuelle Region zu Regionen hinzufügen    
-    this.foundRegions.push(region);
+    this.logb("B");
+    // aktuelle Region zu Regionen hinzufügen    
+    // this.foundRegions.push(region);
     
-    //Beacons aus Regionen in CalculatorBeacons
-    this.foundBeacons = [];
-    for(let i = 0; i < this.foundRegions.length; i++)
-      for(let j = 0; j < this.foundRegions[i].beacons.length; j++){
-        let pB = this.foundRegions[i].beacons[j];
-        this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
-      }
-    this.logb("NoBeacons: " + this.foundBeacons.length.toString())
-    
-    //Position berechnen
+    // // Beacons aus Regionen in CalculatorBeacons
+    // this.foundBeacons = [];
+    // for(let i = 0; i < this.foundRegions.length; i++)
+    //   for(let j = 0; j < this.foundRegions[i].beacons.length; j++){
+    //     let pB = this.foundRegions[i].beacons[j];
+    //     this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
+    //   }
+    this.logb("C");
+    //this.logb("NoBeacons: " + this.foundBeacons.length.toString())
+    this.logb("D");
+    // Position berechnen
     this.logb("Beginn Rechnung")
     //var answers = DistanceCalculator.calculate(this.foundBeacons);
     //var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
