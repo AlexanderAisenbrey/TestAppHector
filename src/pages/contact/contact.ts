@@ -13,8 +13,8 @@ import { stringify } from '@angular/compiler/src/util';
 export class ContactPage {
   log1:String = "";
   log2:String = "";
-  foundBeacons:CalculatorBeacon[];
-  foundRegions:IBeaconPluginResult[];
+  foundBeacons:CalculatorBeacon[]=[];
+  foundRegions:IBeaconPluginResult[]=[];
 
   regions = [ // Deklaration der BeaconRegion
     //this.iBeacon.BeaconRegion('beacon1', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 1, 1),
@@ -55,15 +55,16 @@ export class ContactPage {
   handleRegionDiscovered(region: IBeaconPluginResult) {
     this.loga("B");
     // aktuelle Region zu Regionen hinzufügen    
-    //this.foundRegions.push(region);
-    
+    this.foundRegions.push(region);
+    this.loga("C");
     // // Beacons aus Regionen in CalculatorBeacons
-    // this.foundBeacons = [];
-    // for(let i = 0; i < this.foundRegions.length; i++)
-    //   for(let j = 0; j < this.foundRegions[i].beacons.length; j++){
-    //     let pB = this.foundRegions[i].beacons[j];
+    this.foundBeacons = [];
+     for(let i = 0; i < this.foundRegions.length; i++)
+       for(let j = 0; j < this.foundRegions[i].beacons.length; j++){
+        this.loga("D");
+        //  let pB = this.foundRegions[i].beacons[j];
     //     this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
-    //   }
+       }
     //this.logb("NoBeacons: " + this.foundBeacons.length.toString())
     // Position berechnen
     //var answers = DistanceCalculator.calculate(this.foundBeacons);
@@ -71,7 +72,7 @@ export class ContactPage {
 
     //Position ausgeben
     //this.speak(answer);
-    this.loga("C");
+    this.loga("D");
    }
 
   speak(answer: string) {
