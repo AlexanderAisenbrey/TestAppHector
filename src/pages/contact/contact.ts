@@ -3,6 +3,7 @@ import { NavController } from 'ionic-angular';
 import { IBeacon, IBeaconPluginResult } from '@ionic-native/ibeacon';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { CalculatorBeacon, DistanceCalculator } from '../../providers/calculator/calculator';
+import { stringify } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'page-contact',
@@ -25,34 +26,34 @@ export class ContactPage {
   //Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
   //Wozu private calculator: CalculatorProvider? Viel einfacher und schöner: calculate als static-Methode.
   constructor(public navCtrl: NavController, private tts: TextToSpeech, private iBeacon: IBeacon) {
+    this.loga("1");
     let delegate = this.iBeacon.Delegate();
     
     // Subscribe to some of the delegate's event handlers
     delegate.didRangeBeaconsInRegion()
-      .subscribe( data => {this.log2+='didRangeBeaconsInRegion:\n'});
+      .subscribe( data => {this.log('didRangeBeaconsInRegion:')});
     delegate.didStartMonitoringForRegion()
-      .subscribe( data => {this.log1+='didStartMonitoringForRegion:\n' });
+      .subscribe( data => {this.loga("5");});
     delegate.didEnterRegion()
-      .subscribe( data => {this.log2+='didEnterRegion:\n'; this.handleRegionDiscovered(data) });
+      .subscribe( data => {this.logb('didEnterRegion:'); this.handleRegionDiscovered(data) });
     delegate.didExitRegion()
-      .subscribe( data => {this.log1+='didExitRegion:\n' });
+      .subscribe( data => {this.log('didExitRegion:') });
     this.startMonitoringForAllRegions();
+    this.loga("4");
   }
 
   startMonitoringForAllRegions() {
-    this.log1+="Zu suchende UUIDs:\n";
+    this.loga("2");
     for (var region of this.regions) {
-      this.log1+=region.uuid;
-      this.log2 += "\n";
+      //this.log(region.uuid);
       this.iBeacon.startMonitoringForRegion(region)
-        .then(() => this.log1+='Native layer recieved the request to monitoring\n');
+        .then(() => this.loga("6"));
     }
-    this.log1+="####\n";
+    this.loga("3");
   }
 
   handleRegionDiscovered(region: IBeaconPluginResult) {
-    this.log1+="BeDi\n";
-    this.log2+="BeDi\n";
+   this.logb("beaconsDiscovered");
    //aktuelle Region zu Regionen hinzufügen    
     this.foundRegions.push(region);
     
@@ -63,14 +64,12 @@ export class ContactPage {
         let pB = this.foundRegions[i].beacons[j];
         this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
       }
-    this.log2 += "NoBeacons: ";
-    this.log2 += this.foundBeacons.length.toString();
-    this.log2 += "\n";
+    this.logb("NoBeacons: " + this.foundBeacons.length.toString())
     
     //Position berechnen
-    this.log2+="Beginn Rechnung\n";
-    var answers = DistanceCalculator.calculate(this.foundBeacons);
-    var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
+    this.logb("Beginn Rechnung")
+    //var answers = DistanceCalculator.calculate(this.foundBeacons);
+    //var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
 
     //Position ausgeben
     //this.speak(answer);
@@ -78,8 +77,20 @@ export class ContactPage {
 
   speak(answer: string) {
     this.tts.speak(answer)
-      .then(() => this.log2+="Success")
+      .then(() => this.logb("Success"))
       .catch((reason: any) => console.log(reason));
+  }
+
+  log(logtext: string){
+    this.log1 += logtext + "\n";
+  }
+
+  loga(logtext: string){
+    this.log1 += logtext + " ";
+  }
+  logb(logtext: string){
+    this.log1 += logtext + "\n";
+    this.log2 += logtext + "\n";
   }
 }
 
