@@ -11,8 +11,8 @@ import { stringify } from '@angular/compiler/src/util';
 })
 
 export class ContactPage {
-  log1:String = "Test log 1\n";
-  log2:String = "Test log 2\n";
+  log1:String = "";
+  log2:String = "";
   foundBeacons:CalculatorBeacon[];
   foundRegions:IBeaconPluginResult[];
 
@@ -35,7 +35,7 @@ export class ContactPage {
     delegate.didStartMonitoringForRegion()
       .subscribe( data => {this.loga("5");});
     delegate.didEnterRegion()
-      .subscribe( data => {this.logb('A'); this.handleRegionDiscovered(data) });
+      .subscribe( data => {this.loga('\nA'); this.handleRegionDiscovered(data) });
     delegate.didExitRegion()
       .subscribe( data => {this.log('Z') });
     this.startMonitoringForAllRegions();
@@ -53,9 +53,9 @@ export class ContactPage {
   }
 
   handleRegionDiscovered(region: IBeaconPluginResult) {
-    this.logb("B");
+    this.loga("B");
     // aktuelle Region zu Regionen hinzufügen    
-    // this.foundRegions.push(region);
+    //this.foundRegions.push(region);
     
     // // Beacons aus Regionen in CalculatorBeacons
     // this.foundBeacons = [];
@@ -64,16 +64,14 @@ export class ContactPage {
     //     let pB = this.foundRegions[i].beacons[j];
     //     this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
     //   }
-    this.logb("C");
     //this.logb("NoBeacons: " + this.foundBeacons.length.toString())
-    this.logb("D");
     // Position berechnen
-    this.logb("Beginn Rechnung")
     //var answers = DistanceCalculator.calculate(this.foundBeacons);
     //var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
 
     //Position ausgeben
     //this.speak(answer);
+    this.loga("C");
    }
 
   speak(answer: string) {
