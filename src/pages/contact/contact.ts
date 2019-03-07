@@ -31,7 +31,7 @@ export class ContactPage {
 
     // Subscribe to some of the delegate's event handlers
     delegate.didRangeBeaconsInRegion()
-      .subscribe(data => { this.log('didRangeBeaconsInRegion:') });
+      .subscribe(data => { this.handleBeaconsDiscovered(data)});
     delegate.didStartMonitoringForRegion()
        .subscribe(data => { this.loga(""); });
     delegate.didEnterRegion()
@@ -76,6 +76,10 @@ export class ContactPage {
     //Position ausgeben
     //this.speak(answer);
     this.loga("D");
+  }
+
+  handleBeaconsDiscovered(beacons : IBeaconPluginResult) {
+    this.logb("didRangeBeaconsInRegion:");
   }
 
   speak(answer: string) {
