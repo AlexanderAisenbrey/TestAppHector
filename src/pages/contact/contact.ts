@@ -1,103 +1,183 @@
-﻿import { Component } from '@angular/core';
-import { NavController, Loading } from 'ionic-angular';
-import { IBeacon, IBeaconPluginResult } from '@ionic-native/ibeacon';
-import { TextToSpeech } from '@ionic-native/text-to-speech';
-import { CalculatorBeacon, DistanceCalculator } from '../../providers/calculator/calculator';
-import { stringify } from '@angular/compiler/src/util';
-
+﻿import { Component } from "@angular/core";
+import { NavController } from "ionic-angular";
+import { IBeacon, IBeaconPluginResult } from "@ionic-native/ibeacon"; //Braucht man IBeaconPluginResult? Und Region?
+import { TextToSpeech } from "@ionic-native/text-to-speech";
+/*
+import {
+  CalculatorBeacon,
+  DistanceCalculator
+} from "../../providers/calculator/calculator";
+*/
 @Component({
-  selector: 'page-contact',
-  templateUrl: 'contact.html'
+  selector: "page-contact",
+  templateUrl: "contact.html"
 })
-
 export class ContactPage {
-  log1: String = "";
-  log2: String = "";
-  foundBeacons: CalculatorBeacon[] = [];
-  foundRegions: IBeaconPluginResult[] = [];
+  log: StringConstructor;
+  //foundBeacons: CalculatorBeacon[];
+  foundRegions: any[] = [];
 
-  regions = [ // Deklaration der BeaconRegion
+  regions = [
+    this.iBeacon.BeaconRegion('beacon1', 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0', 1, 1),
+    this.iBeacon.BeaconRegion('beacon2', 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0', 2, 1),
+    this.iBeacon.BeaconRegion('beacon3', 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0', 3, 1),
+    this.iBeacon.BeaconRegion('beacon4', 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0', 4, 1)
+    //Deklaration der BeaconRegion
     //this.iBeacon.BeaconRegion('beacon1', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 1, 1),
-    this.iBeacon.BeaconRegion('beacon2', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 2, 1),
-    this.iBeacon.BeaconRegion('beacon3', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 3, 1),
-    this.iBeacon.BeaconRegion('beacon4', 'B9407F30-F5F8-466E-AFF9-25556B57FE6D', 4, 1)
-  ]
+    /*
+    this.iBeacon.BeaconRegion(
+      "beacon2",
+      "B9407F30-F5F8-466E-AFF9-25556B57FE6D",
+      2,
+      1
+    ),
+    this.iBeacon.BeaconRegion(
+      "beacon3",
+      "B9407F30-F5F8-466E-AFF9-25556B57FE6D",
+      3,
+      1
+    ),
+    this.iBeacon.BeaconRegion(
+      "beacon4",
+      "B9407F30-F5F8-466E-AFF9-25556B57FE6D",
+      4,
+      1
+    )
+    */
+  ];
 
-  // Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
-  // Wozu private calculator: CalculatorProvider? Viel einfacher und schöner: calculate als static-Methode.
-  constructor(public navCtrl: NavController, private tts: TextToSpeech, private iBeacon: IBeacon) {
-    // this.loga("1");
+  //Wofür sind private alertCtrl: AlertController und private htmlCtrl: HTMLController ? Scheinen nutzlos zu sein.
+  //Wozu private calculator: CalculatorProvider? Viel einfacher und schöner: calculate als static-Methode.
+  constructor(
+    public navCtrl: NavController,
+    private tts: TextToSpeech,
+    private iBeacon: IBeacon
+  ) {
     let delegate = this.iBeacon.Delegate();
 
     // Subscribe to some of the delegate's event handlers
-    delegate.didRangeBeaconsInRegion()
-      .subscribe(data => { this.handleBeaconsDiscovered(data)});
-    delegate.didStartMonitoringForRegion()
-       .subscribe(data => { this.loga(""); });
-    delegate.didEnterRegion()
-      .subscribe(data => { this.loga('\nA'); this.handleRegionDiscovered(data) });
-    delegate.didExitRegion()
-      .subscribe(data => { this.log('Z') });
+    delegate.didRangeBeaconsInRegion().subscribe(data => {
+      //console.log("didRangeBeaconsInRegion: ", data);
+    });
+    delegate.didStartMonitoringForRegion().subscribe(data => {
+      //console.log("didStartMonitoringForRegion: ", data);
+    });
+    delegate.didEnterRegion().subscribe(data => {
+      console.log("didEnterRegion: ", data);
+      this.handleBeaconDiscovered(data);
+    });
+    delegate.didExitRegion().subscribe(data => {
+      console.log("didExitRegion: ", data);
+    });
     this.startMonitoringForAllRegions();
-    // this.loga("4");
   }
 
   startMonitoringForAllRegions() {
-    // this.loga("2");
     for (var region of this.regions) {
-      //this.log(region.uuid);
-      this.iBeacon.startMonitoringForRegion(region)
-        // .then(() => this.loga("6"));
+      console.log(region);
+      this.iBeacon
+        .startMonitoringForRegion(region)
+        .then(
+          () =>
+          console.log("Native layer recieved the request to monitoring"),
+          error =>
+          console.log("Native layer failed to begin monitoring: ", error)
+        );
     }
-    // this.loga("3");
   }
 
-  handleRegionDiscovered(region: IBeaconPluginResult) {
-    this.loga("B");
-    // aktuelle Region zu Regionen hinzufügen    
-    this.foundRegions.push(region);
-    this.loga("C");
-    // Beacons aus Regionen in CalculatorBeacons
-    this.foundBeacons = [];
-    for (let i = 0; i < this.foundRegions.length; i++) {
-      this.loga(this.foundRegions.length.toString());
-      //this.loga("x" + this.foundRegions[i].beacons.length.toString() + "x");
-      for (let j = 0; j < this.foundRegions[i].beacons.length; j++) {
-        this.loga("D");
-        //  let pB = this.foundRegions[i].beacons[j];
-        //     this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
+  handleBeaconDiscovered(region) {
+    // 1st found beacon
+    console.log("found beacon");
+    console.log(region);
+    if (this.foundRegions.length == 0) {
+      this.foundRegions.push(region.region);
+    } else {
+      // 2nd - 4th found beacon
+      var beaconAlreadyFound = false;
+      console.log("checking if beacon was found already", region);
+      for (var i = 0; i < this.foundRegions.length; i++) {
+        var foundRegion = this.foundRegions[i];
+        console.log("found region " + (i + 1) + ": ", foundRegion);
+        if (
+          foundRegion.uuid == region.region.uuid &&
+          foundRegion.major == region.region.major &&
+          foundRegion.minor == region.region.minor
+        ) {
+          console.log("beacon already found");
+          beaconAlreadyFound = true;
+          break;
+        }
+      }
+      if (!beaconAlreadyFound) {
+        console.log(region);
+        console.log("found a new answer beacon");
+        this.foundRegions.push(region.region);
+        console.log("founds regions: ", this.foundRegions);
+      }
+
+
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      //Wenn 3 Beacons gefunden werden, werden alle 3 in der CONSOLE ausgegeben, danach kann die Berechnung beginnen                        !
+      //Bei mir geht der Calculator provider immernoch nicht, da immernoch jquery benutzt wird und bei mir nur Fehler kommen                !
+      //Ebenso musste ich alle this.apply und this.logs entfernen... Ich weiß nicht was das macht oder soll aber es gibt mir nur errors,    !
+      //da es relativ schwer ist auf ein Page Object logs auszuführen                                                                       !
+      //Bitte an diesem Cde nichts ändern, nur unten die calculate Methode aufrufen und die BEACONS innerhalb der Regions übergeben und     !
+      //die Beacons daraus bzw. die Daten die ihr braucht                                                                                   !
+      //im Calculator zusammenschustern wie auch immer.                                                                                     !
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+      if (this.foundRegions.length >= 3) {
+        for (var i = 0; i < this.foundRegions.length; i++) {
+          console.log("founds Beacon Nr.: " + i, this.foundRegions[i]);
+        }
+        //var answers = DistanceCalculator.calculate(this.foundBeacons);
+        var answer =
+          "Die Position ist: " +
+          //answers[0].toString() +
+          " oder " +
+          //answers[1].toString();
+
+        //Position ausgeben
+        this.speak(answer);
+        console.log(answer);
       }
     }
-    //this.logb("NoBeacons: " + this.foundBeacons.length.toString())
-    // Position berechnen
-    //var answers = DistanceCalculator.calculate(this.foundBeacons);
-    //var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
-
-    //Position ausgeben
-    //this.speak(answer);
-    this.loga("D");
-  }
-
-  handleBeaconsDiscovered(beacons : IBeaconPluginResult) {
-    this.logb("didRangeBeaconsInRegion:");
   }
 
   speak(answer: string) {
-    this.tts.speak(answer)
-      .then(() => this.logb("Success"))
+    this.tts
+      .speak(answer)
+      .then(() => console.log("Success"))
       .catch((reason: any) => console.log(reason));
   }
+  //Wurde nie aufgerufen so kann nichts gefunden werden oder passieren...
+  /*
+  handleRegionDiscovered(region: IBeaconPluginResult) {
+    console.log("found region");
+    console.log(region);
+    
+    //aktuelle Region zu Regionen hinzufügen    
+    this.foundRegions.push(region);
+    
+    //Beacons aus Regionen in CalculatorBeacons
+    this.foundBeacons = [];
+    for(let i = 0; i < this.foundRegions.length; i++)
+      for(let j = 0; j < this.foundRegions[i].beacons.length; j++){
+        let pB = this.foundRegions[i].beacons[j];
+        this.foundBeacons.push(new CalculatorBeacon(pB.uuid, pB.major, pB.minor, Number.NaN,Number.NaN,Number.NaN, pB.rssi, pB.tx));
+      }
 
-  log(logtext: string) {
-    this.log1 += logtext + "\n";
+    //Position berechnen
+    var answers = DistanceCalculator.calculate(this.foundBeacons);
+    var answer = "Die Position ist: " + answers[0].toString() + " oder " + answers[1].toString();
+
+    //Position ausgeben
+    this.speak(answer);
+    console.log(answer);
   }
 
-  loga(logtext: string) {
-    this.log1 += logtext + " ";
-  }
-  logb(logtext: string) {
-    this.log1 += logtext + "\n";
-    this.log2 += logtext + "\n";
-  }
+  
+  */
 }
-
